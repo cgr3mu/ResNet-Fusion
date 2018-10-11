@@ -83,8 +83,6 @@ else:
 	C.base_net_weights = nn.get_weight_path()
 
 all_train_imgs, classes_count, class_mapping = get_data(options.train_path, 'train')
-print all_train_imgs[0]
-#raw_input('hi')
 all_val_imgs, val_classes_count, val_class_mapping = get_data(options.train_path, 'test')
 
 if 'bg' not in classes_count:
@@ -136,9 +134,7 @@ else:
 rgb_img_input = Input(shape=input_shape_img)
 therm_img_input = Input(shape=input_shape_img)
 roi_input = Input(shape=(None, 4))
-#print(train_imgs[0])
-#print(len(val_imgs))
-#raw_input('hello')
+
 # define the base network (resnet here, can be VGG, Inception, etc)
 shared_layers = nn.nn_base(rgb_img_input,therm_img_input,trainable=True) ### passing a list of inputs instead of one input
 
@@ -202,18 +198,8 @@ for epoch_num in range(num_epochs):
 					print('RPN is not producing bounding boxes that overlap the ground truth boxes. Check RPN settings or keep training.')
 
 			Xrgb, Xtherm, Y, img_data = next(data_gen_train)
-			#print(Xrgb)
-			#print(Xtherm)
-			#print(Xrgb.shape)
-			#print(Xtherm.shape)
-			#print(np.asarray(img_data).shape)
-			#raw_input('hi')
-			#print(Y[0].shape)
-			#print(Y[1].shape)
 			
-			#raw_input("Hello")
 			loss_rpn = model_rpn.train_on_batch([Xrgb, Xtherm], Y)
-			#print ("HIIIIIII")
 			P_rpn = model_rpn.predict_on_batch([Xrgb, Xtherm])
 
 			R = roi_helpers.rpn_to_roi(P_rpn[0], P_rpn[1], C, K.image_dim_ordering(), use_regr=True, overlap_thresh=0.7, max_boxes=300)
