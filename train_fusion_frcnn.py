@@ -234,7 +234,7 @@ def validate():
 			else:
 				sel_samples = random.choice(pos_samples)
 
-		loss_class_val = model_classifier.evaluate([[Xrgb, Xtherm], X2[:, sel_samples, :]], [Y1[:, sel_samples, :], Y2[:, sel_samples, :]])
+		loss_class_val = model_classifier.evaluate([Xrgb, Xtherm], X2[:, sel_samples, :]], [Y1[:, sel_samples, :], Y2[:, sel_samples, :]])
 
 		val_losses[val_iter_num, 0] = loss_rpn_val[1]
 		val_losses[val_iter_num, 1] = loss_rpn_val[2]
