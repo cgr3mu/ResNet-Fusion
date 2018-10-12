@@ -10,17 +10,10 @@ def augment(img_data, config, augment=True):
 	assert 'height' in img_data
 
 	img_data_aug = copy.deepcopy(img_data)
-	#print img_data_aug['filepath']
-	#raw_input("checking img_data_aug")
+
 	rgb_img = cv2.imread(img_data_aug['filepath'])
-	#print rgb_img.shape
-	#raw_input("printing shape of rgb image")
+
 	therm_img = cv2.imread(img_data_aug['filepath'].replace('visible','lwir'))
-	#print rgb_img.shape
-	#print therm_img.shape
-	
-	#print img_data_aug['filepath'].replace('visible','lwir')
-	#raw_input("printed shapes")
 
 	if augment:
 		rows, cols = rgb_img.shape[:2]
@@ -49,7 +42,7 @@ def augment(img_data, config, augment=True):
 				rgb_img = np.transpose(rgb_img, (1,0,2))
 				rgb_img = cv2.flip(rgb_img, 0)
 				therm_img = np.transpose(therm_img, (1,0,2))
-				therm_img = cv2.flip(therm_img, 0)				
+				therm_img = cv2.flip(therm_img, 0)
 			elif angle == 0:
 				pass
 
@@ -72,7 +65,7 @@ def augment(img_data, config, augment=True):
 					bbox['x1'] = rows - y2
 					bbox['x2'] = rows - y1
 					bbox['y1'] = x1
-					bbox['y2'] = x2        
+					bbox['y2'] = x2
 				elif angle == 0:
 					pass
 
