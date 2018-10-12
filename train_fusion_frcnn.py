@@ -184,7 +184,7 @@ vis = True
 def validate():
 	print('Begining Validation: ')
 	while True:
-		X_val, Xtherm_val Y_val, img_data_val = next(data_gen_val)
+		X_val, Xtherm_val, Y_val, img_data_val = next(data_gen_val)
 		loss_rpn_val = model_rpn.evaluate([X_val, Xtherm_val], Y_val, batch_size = 256, verbose = 0)
 
 		P_rpn_val = model_rpn.predict_on_batch([X_val, Xtherm_val])
@@ -288,7 +288,7 @@ for epoch_num in range(num_epochs):
 				if mean_overlapping_bboxes == 0:
 					print('RPN is not producing bounding boxes that overlap the ground truth boxes. Check RPN settings or keep training.')
 
-			X, Xtherm Y, img_data = next(data_gen_train)
+			X, Xtherm, Y, img_data = next(data_gen_train)
 
 			loss_rpn = model_rpn.train_on_batch([Xrgb, Xtherm], Y)
 
