@@ -81,14 +81,14 @@ def calc_rpn(C, img_data, width, height, resized_width, resized_height, img_leng
 	downscale = float(C.rpn_stride)
 	anchor_sizes = C.anchor_box_scales
 	anchor_ratios = C.anchor_box_ratios
-	num_anchors = len(anchor_sizes) * len(anchor_ratios)	
+	num_anchors = len(anchor_sizes) * len(anchor_ratios)
 
 	# calculate the output map size based on the network architecture
 
 	(output_width, output_height) = img_length_calc_function(resized_width, resized_height)
 
 	n_anchratios = len(anchor_ratios)
-	
+
 	# initialise empty output objectives
 	y_rpn_overlap = np.zeros((output_height, output_width, num_anchors))
 	y_is_box_valid = np.zeros((output_height, output_width, num_anchors))
@@ -110,23 +110,23 @@ def calc_rpn(C, img_data, width, height, resized_width, resized_height, img_leng
 		gta[bbox_num, 1] = bbox['x2'] * (resized_width / float(width))
 		gta[bbox_num, 2] = bbox['y1'] * (resized_height / float(height))
 		gta[bbox_num, 3] = bbox['y2'] * (resized_height / float(height))
-	
+
 	# rpn ground truth
 
 	for anchor_size_idx in range(len(anchor_sizes)):
 		for anchor_ratio_idx in range(n_anchratios):
 			anchor_x = anchor_sizes[anchor_size_idx] * anchor_ratios[anchor_ratio_idx][0]
-			anchor_y = anchor_sizes[anchor_size_idx] * anchor_ratios[anchor_ratio_idx][1]	
-			
-			for ix in range(output_width):					
-				# x-coordinates of the current anchor box	
+			anchor_y = anchor_sizes[anchor_size_idx] * anchor_ratios[anchor_ratio_idx][1]
+
+			for ix in range(output_width):
+				# x-coordinates of the current anchor box
 				x1_anc = downscale * (ix + 0.5) - anchor_x / 2
-				x2_anc = downscale * (ix + 0.5) + anchor_x / 2	
-				
-				# ignore boxes that go across image boundaries					
+				x2_anc = downscale * (ix + 0.5) + anchor_x / 2
+
+				# ignore boxes that go across image boundaries
 				if x1_anc < 0 or x2_anc > resized_width:
 					continue
-					
+
 				for jy in range(output_height):
 
 					# y-coordinates of the current anchor box
@@ -137,7 +137,7 @@ def calc_rpn(C, img_data, width, height, resized_width, resized_height, img_leng
 					if y1_anc < 0 or y2_anc > resized_height:
 						continue
 
-					# bbox_type indicates whether an anchor should be a target 
+					# bbox_type indicates whether an anchor should be a target
 					bbox_type = 'neg'
 
 					# this is the best IOU for the (x,y) coord and the current anchor
@@ -145,7 +145,7 @@ def calc_rpn(C, img_data, width, height, resized_width, resized_height, img_leng
 					best_iou_for_loc = 0.0
 
 					for bbox_num in range(num_bboxes):
-						
+
 						# get IOU of the current GT box and the current anchor box
 						curr_iou = iou([gta[bbox_num, 0], gta[bbox_num, 2], gta[bbox_num, 1], gta[bbox_num, 3]], [x1_anc, y1_anc, x2_anc, y2_anc])
 						# calculate the regression targets if they will be needed
@@ -159,7 +159,7 @@ def calc_rpn(C, img_data, width, height, resized_width, resized_height, img_leng
 							ty = (cy - cya) / (y2_anc - y1_anc)
 							tw = np.log((gta[bbox_num, 1] - gta[bbox_num, 0]) / (x2_anc - x1_anc))
 							th = np.log((gta[bbox_num, 3] - gta[bbox_num, 2]) / (y2_anc - y1_anc))
-						
+
 						if img_data['bboxes'][bbox_num]['class'] != 'bg':
 
 							# all GT boxes should be mapped to an anchor box, so we keep track of which anchor box was best
@@ -260,9 +260,9 @@ class threadsafe_iter:
 
 	def next(self):
 		with self.lock:
-			return next(self.it)		
+			return next(self.it)
 
-	
+
 def threadsafe_generator(f):
 	"""A decorator that takes a generator function and makes it thread-safe.
 	"""
@@ -286,15 +286,13 @@ def get_anchor_gt(all_img_data, class_count, C, img_length_calc_function, backen
 
 				if C.balanced_classes and sample_selector.skip_sample_for_balanced_class(img_data):
 					continue
-				#print "I am here"
 				# read in image, and optionally add augmentation
 				# x_img --> RGB images and x2_img --> Thermal images
 				if mode == 'train':
 					img_data_aug, x_img, x2_img = data_augment.augment(img_data, C, augment=True)
 				else:
 					img_data_aug, x_img, x2_img = data_augment.augment(img_data, C, augment=False)
-				#print "I am past the data augument block"
-
+				
 				(width, height) = (img_data_aug['width'], img_data_aug['height'])
 				(rows, cols, _) = x_img.shape
 
@@ -303,7 +301,7 @@ def get_anchor_gt(all_img_data, class_count, C, img_length_calc_function, backen
 
 				# get image dimensions for resizing
 				(resized_width, resized_height) = get_new_img_size(width, height, C.im_size)
-				
+
 				# resize the image so that smalles side is length = 600px
 				x_img = cv2.resize(x_img, (resized_width, resized_height), interpolation=cv2.INTER_CUBIC)
 				x2_img = cv2.resize(x2_img, (resized_width, resized_height), interpolation=cv2.INTER_CUBIC)
@@ -324,7 +322,7 @@ def get_anchor_gt(all_img_data, class_count, C, img_length_calc_function, backen
 
 				x_img = np.transpose(x_img, (2, 0, 1))
 				x_img = np.expand_dims(x_img, axis=0)
-				
+
 				# for thermal images
 				x2_img = x2_img[:,:, (2, 1, 0)]  # BGR -> RGB
 				x2_img = x2_img.astype(np.float32)
