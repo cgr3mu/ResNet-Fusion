@@ -305,8 +305,6 @@ def get_anchor_gt(all_img_data, class_count, C, img_length_calc_function, backen
 				# resize the image so that smalles side is length = 600px
 				x_img = cv2.resize(x_img, (resized_width, resized_height), interpolation=cv2.INTER_CUBIC)
 				x2_img = cv2.resize(x2_img, (resized_width, resized_height), interpolation=cv2.INTER_CUBIC)
-				y_rpn_cls = np.zeros((output_height, output_width, num_anchors * 4))
-				y_rpn_regr = np.zeros((output_height, output_width, num_anchors * 4))
 				try:
 					y_rpn_cls, y_rpn_regr = calc_rpn(C, img_data_aug, width, height, resized_width, resized_height, img_length_calc_function)
 				except:
