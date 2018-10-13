@@ -171,6 +171,7 @@ num_epochs = int(options.num_epochs)
 iter_num = 0
 
 losses = np.zeros((epoch_length, 5))
+val_losses = np.zeros((epoch_length, 5))
 rpn_accuracy_rpn_monitor = []
 rpn_accuracy_for_epoch = []
 start_time = time.time()
@@ -245,7 +246,7 @@ def validate():
 		val_iter_num += 1
 		print(str(val_iter_num)+'/'+str(epoch_length) +' val_rpn_cls: '+str(np.mean(val_losses[:val_iter_num, 0])) +' val_rpn_regr: '+str(np.mean(val_losses[:val_iter_num, 1]))+
 						  ' val_detector_cls: '+str(np.mean(val_losses[:val_iter_num, 2]))+' val_detector_regr: '+str(np.mean(val_losses[:val_iter_num, 3])))
-		if val_iter_num == epoch_length:
+		if val_iter_num == epoch_length-1:
 			loss_rpn_cls = np.mean(losses[:, 0])
 			loss_rpn_regr = np.mean(losses[:, 1])
 			loss_class_cls = np.mean(losses[:, 2])
@@ -353,7 +354,7 @@ for epoch_num in range(num_epochs):
 			print(str(iter_num)+'/'+str(epoch_length) +' rpn_cls: '+str(np.mean(losses[:iter_num, 0])) +' rpn_regr: '+str(np.mean(losses[:iter_num, 1]))+
 									  ' detector_cls: '+str(np.mean(losses[:iter_num, 2]))+' detector_regr: '+str(np.mean(losses[:iter_num, 3])))
 
-			if iter_num == epoch_length:
+			if iter_num == epoch_length-1:
 				validate()
 				break
 		except Exception as e:
